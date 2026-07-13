@@ -10,7 +10,7 @@ const HomeScreen: React.FC = () => {
     <View style={styles.container}>
       <Text>Домашний экран</Text>
       <Button onPress={() => navigation.navigate("Login")} title="Custom button" />
-      <Button title="Second button" />
+      <Button onPress={() => navigation.navigate("CourseDetails", { courseId: "1", courseName: "React Native для начинающих" })} title="Second button" />
     </View>
   );
 };
