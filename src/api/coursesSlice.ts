@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
 export const getCourses = createAsyncThunk<ICourses[], void, { rejectValue: string }>("courses/getCourses", async (_, { rejectWithValue }) => {
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+    const response = await fetch(`${apiUrl}/api/courses`, {
       method: "GET",
     });
     if (!response.ok) {

@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import { RootStackNavigationProp } from "../types/rootStackTypes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { getCourses, ICourses } from "../api/coursesSlice";
+import { getCourses } from "../api/coursesSlice";
 import { FlatList } from "react-native";
 import CourseCard from "../components/CourseCard";
 
@@ -43,7 +43,7 @@ const HomeScreen: React.FC = () => {
 
       <View style={styles.buttonsContainer}>
         <Button onPress={() => navigation.navigate("Login")} title="На экран Login" />
-        <Button onPress={() => navigation.navigate("CourseDetails", { courseId: "1", courseName: "React Native для начинающих" })} title="Детали курса" />
+        {/* <Button onPress={() => navigation.navigate("CourseDetails", { courseId: "1", courseName: "React Native для начинающих", courseDescription: body })} title="Детали курса" /> */}
       </View>
     </View>
   );
@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   },
   coursesContainer: {
     paddingVertical: 10,
+    gap: 15,
   },
 });
 

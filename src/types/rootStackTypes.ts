@@ -11,6 +11,7 @@ export type RootStackParamList = {
 export interface ICourseDetails {
   courseId: string;
   courseName: string;
+  courseDescription: string;
 }
 
 export type RootStackNavigationProp<T extends keyof RootStackParamList> = NativeStackNavigationProp<RootStackParamList, T>;

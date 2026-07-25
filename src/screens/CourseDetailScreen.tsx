@@ -1,7 +1,7 @@
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { RootStackNavigationProp, RootStackParamList, RootStackRouteProp } from "../types/rootStackTypes";
+import { RootStackNavigationProp, RootStackRouteProp } from "../types/rootStackTypes";
 
 const CourseDetailScreen: React.FC = () => {
   const navigation = useNavigation<RootStackNavigationProp<"CourseDetails">>();
@@ -12,6 +12,7 @@ const CourseDetailScreen: React.FC = () => {
     <View style={styles.container}>
       <Text>Детали курса</Text>
       <Text>{routeParams.courseName}</Text>
+      <Text>{routeParams.courseDescription}</Text>
     </View>
   );
 };
