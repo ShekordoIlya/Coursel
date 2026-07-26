@@ -1,16 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Button, ActivityIndicator, Pressable } from "react-native";
 import { RootStackNavigationProp } from "../types/rootStackTypes";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getCourses } from "../api/coursesSlice";
 import { FlatList } from "react-native";
 import CourseCard from "../components/CourseCard";
+import { logout } from "../store/slices/authSlice";
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<RootStackNavigationProp<"Home">>();
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector((state) => state.courses);
+  const userName = useAppSelector((state) => state.auth.userName);
 
   useEffect(() => {
     dispatch(getCourses());
@@ -42,8 +44,10 @@ const HomeScreen: React.FC = () => {
       <FlatList style={{ flex: 1, width: "100%" }} data={data || []} keyExtractor={(item) => item.id.toString()} renderItem={({ item }) => <CourseCard course={item} />} contentContainerStyle={styles.coursesContainer}></FlatList>
 
       <View style={styles.buttonsContainer}>
-        <Button onPress={() => navigation.navigate("Login")} title="На экран Login" />
-        {/* <Button onPress={() => navigation.navigate("CourseDetails", { courseId: "1", courseName: "React Native для начинающих", courseDescription: body })} title="Детали курса" /> */}
+        <Text style={styles.buttonsContainerText}>Привет, {userName}!</Text>
+        <Pressable style={styles.button} onPress={() => dispatch(logout())}>
+          <Text style={styles.buttonText}>Выйти</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -58,12 +62,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   buttonsContainer: {
-    paddingVertical: 20,
-    gap: 10,
+    paddingVertical: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 20,
+  },
+  buttonsContainerText: {
+    fontSize: 16,
   },
   coursesContainer: {
     paddingVertical: 10,
     gap: 15,
+  },
+  button: {
+    paddingHorizontal: 100,
+    paddingVertical: 15,
+    backgroundColor: "#c00",
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 
