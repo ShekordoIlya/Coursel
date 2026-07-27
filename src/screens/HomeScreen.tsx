@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { getCourses } from "../api/coursesSlice";
 import { FlatList } from "react-native";
 import CourseCard from "../components/CourseCard";
-import { logout } from "../store/slices/authSlice";
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<RootStackNavigationProp<"Home">>();
@@ -45,8 +44,8 @@ const HomeScreen: React.FC = () => {
 
       <View style={styles.buttonsContainer}>
         <Text style={styles.buttonsContainerText}>Привет, {userName}!</Text>
-        <Pressable style={styles.button} onPress={() => dispatch(logout())}>
-          <Text style={styles.buttonText}>Выйти</Text>
+        <Pressable style={styles.button} onPress={() => navigation.navigate("Profile")}>
+          <Text style={styles.buttonText}>На экран профиля</Text>
         </Pressable>
       </View>
     </View>

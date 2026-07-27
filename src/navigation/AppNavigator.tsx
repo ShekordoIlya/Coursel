@@ -23,7 +23,7 @@ const AuthStack = createNativeStackNavigator({
     },
     Profile: {
       screen: ProfileScreen,
-      options: { title: "Экран профиля" },
+      options: { title: "Профиль пользователя" },
     },
   },
 });

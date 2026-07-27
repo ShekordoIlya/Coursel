@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
@@ -48,7 +48,7 @@ const courseApiSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(getCourses.fulfilled, (state, action: PayloadAction<ICourses[]>) => {
+      .addCase(getCourses.fulfilled, (state, action) => {
         state.data = action.payload;
         state.loading = false;
         state.error = null;
