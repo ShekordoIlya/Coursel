@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/slices/authSlice";
-import { clearUser } from "../utils/storage";
+import { clearAuth } from "../utils/storage";
 import { getEnrollments, updateEnrollmentStatus, getStatistics } from "../api/enrollmentsSlice";
 import StatisticsChart from "../components/StatisticsChart";
 import { RootStackParamList } from "../types/rootStackTypes";
@@ -21,8 +21,13 @@ const ProfileScreen: React.FC = () => {
   }, [dispatch]);
 
   const signOut = async () => {
-    dispatch(logout());
-    await clearUser();
+    try {
+      dispatch(logout());
+
+      await clearAuth();
+    } catch (error) {
+      console.error("ОШИБКА при выходе:", error);
+    }
   };
 
   const handleStatusChange = (enrollmentId: number, newStatus: string) => {
@@ -62,7 +67,7 @@ const ProfileScreen: React.FC = () => {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.greeting}>Приветствую, {userName}!</Text>
+      <Text style={styles.greeting}>Приветствую, {userName || "Гость"}!</Text>
 
       {statistics && <StatisticsChart completed={statistics.completed} failed={statistics.failed} enrolled={statistics.enrolled} />}
 

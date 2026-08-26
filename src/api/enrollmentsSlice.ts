@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store/store";
 
 interface IEnrollment {
   id: number;
@@ -35,9 +36,17 @@ const initialState: IInitialState = {
   error: null,
 };
 
-export const getEnrollments = createAsyncThunk<IEnrollment[], void, { rejectValue: string }>("enrollments/getEnrollments", async (_, { rejectWithValue }) => {
+export const getEnrollments = createAsyncThunk<IEnrollment[], void, { rejectValue: string; state: RootState }>("enrollments/getEnrollments", async (_, { rejectWithValue, getState }) => {
   try {
-    const response = await fetch(`${apiUrl}/api/enrollments`);
+    const state = getState();
+    const token = state.auth.token;
+
+    const response = await fetch(`${apiUrl}/api/enrollments`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!response.ok) throw new Error("Ошибка получения записей");
     return await response.json();
   } catch (error) {
@@ -45,11 +54,17 @@ export const getEnrollments = createAsyncThunk<IEnrollment[], void, { rejectValu
   }
 });
 
-export const enrollToCourse = createAsyncThunk<IEnrollment, { courseId: number }, { rejectValue: string }>("enrollments/enrollToCourse", async ({ courseId }, { rejectWithValue }) => {
+export const enrollToCourse = createAsyncThunk<IEnrollment, { courseId: number }, { rejectValue: string; state: RootState }>("enrollments/enrollToCourse", async ({ courseId }, { rejectWithValue, getState }) => {
   try {
+    const state = getState();
+    const token = state.auth.token;
+
     const response = await fetch(`${apiUrl}/api/enrollments`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ courseId }),
     });
     if (!response.ok) throw new Error("Ошибка записи на курс");
@@ -59,11 +74,17 @@ export const enrollToCourse = createAsyncThunk<IEnrollment, { courseId: number }
   }
 });
 
-export const updateEnrollmentStatus = createAsyncThunk<IEnrollment, { id: number; status: string }, { rejectValue: string }>("enrollments/updateStatus", async ({ id, status }, { rejectWithValue }) => {
+export const updateEnrollmentStatus = createAsyncThunk<IEnrollment, { id: number; status: string }, { rejectValue: string; state: RootState }>("enrollments/updateStatus", async ({ id, status }, { rejectWithValue, getState }) => {
   try {
+    const state = getState();
+    const token = state.auth.token;
+
     const response = await fetch(`${apiUrl}/api/enrollments/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ status }),
     });
     if (!response.ok) throw new Error("Ошибка обновления статуса");
@@ -73,9 +94,17 @@ export const updateEnrollmentStatus = createAsyncThunk<IEnrollment, { id: number
   }
 });
 
-export const getStatistics = createAsyncThunk<IStatistics, void, { rejectValue: string }>("enrollments/getStatistics", async (_, { rejectWithValue }) => {
+export const getStatistics = createAsyncThunk<IStatistics, void, { rejectValue: string; state: RootState }>("enrollments/getStatistics", async (_, { rejectWithValue, getState }) => {
   try {
-    const response = await fetch(`${apiUrl}/api/statistics`);
+    const state = getState();
+    const token = state.auth.token;
+
+    const response = await fetch(`${apiUrl}/api/statistics`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!response.ok) throw new Error("Ошибка получения статистики");
     return await response.json();
   } catch (error) {

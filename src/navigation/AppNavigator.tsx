@@ -4,8 +4,8 @@ import HomeScreen from "../screens/HomeScreen";
 import CourseDetailScreen from "../screens/CourseDetailScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import { useAppSelector } from "../store/hooks";
 import AddCourseScreen from "../screens/AddCourseScreen";
+import { useAppSelector } from "../store/hooks";
 
 const AuthStack = createNativeStackNavigator({
   initialRouteName: "Home",
@@ -17,10 +17,6 @@ const AuthStack = createNativeStackNavigator({
     CourseDetails: {
       screen: CourseDetailScreen,
       options: { title: "Детали курса" },
-    },
-    Login: {
-      screen: LoginScreen,
-      options: { title: "Вход" },
     },
     Profile: {
       screen: ProfileScreen,
@@ -36,17 +32,23 @@ const AuthStack = createNativeStackNavigator({
 const GuestStack = createNativeStackNavigator({
   initialRouteName: "Login",
   screens: {
-    Login: { screen: LoginScreen, options: { title: "Вход" } },
+    Login: {
+      screen: LoginScreen,
+      options: {
+        title: "Вход",
+        headerShown: false,
+      },
+    },
   },
 });
 
 const AuthenticatedNavigation = createStaticNavigation(AuthStack);
 const GuestNavigation = createStaticNavigation(GuestStack);
 
-const Navigator = () => {
-  const isAuth = useAppSelector((state) => state.auth.isAuthenticated);
+const Navigator: React.FC = () => {
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  return isAuth ? <AuthenticatedNavigation /> : <GuestNavigation />;
+  return isAuthenticated ? <AuthenticatedNavigation /> : <GuestNavigation />;
 };
 
 export default Navigator;

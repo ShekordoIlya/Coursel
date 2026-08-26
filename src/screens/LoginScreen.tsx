@@ -1,74 +1,96 @@
-import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
-import { RootStackNavigationProp } from "../types/rootStackTypes";
-import { useAppSelector, useAppDispatch } from "../store/hooks";
-import { TextInput } from "react-native";
-import { initializeAuth, login } from "../store/slices/authSlice";
-import { saveUser } from "../utils/storage";
+import { View, Text, StyleSheet, Pressable, Alert, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { initializeAuth, login, register } from "../store/slices/authSlice";
+import { saveToken, saveUserData } from "../utils/storage";
 
 const LoginScreen: React.FC = () => {
-  // const navigation = useNavigation<RootStackNavigationProp<"Login">>();
-  const userName = useAppSelector((state) => state.auth.userName);
-  const [input, setInput] = useState("");
   const dispatch = useAppDispatch();
+  const { loading, error } = useAppSelector((state) => state.auth);
+
+  const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     dispatch(initializeAuth());
   }, [dispatch]);
 
-  const pressableHandler = async () => {
-    if (input === "") {
-      Alert.alert("Ошибка", "Поле не может быть пустым!");
+  const handleSubmit = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Ошибка", "Email и пароль обязательны");
+      return;
+    }
+    if (!isLogin && !name.trim()) {
+      Alert.alert("Ошибка", "Имя обязательно");
+      return;
+    }
+    if (password.length < 6) {
+      Alert.alert("Ошибка", "Пароль должен быть не менее 6 символов");
       return;
     }
 
-    dispatch(login(input));
-    await saveUser(input);
-    setInput("");
+    try {
+      let resultAction;
+      if (isLogin) {
+        resultAction = await dispatch(login({ email, password }));
+      } else {
+        resultAction = await dispatch(register({ name, email, password }));
+      }
+
+      if ((isLogin ? login : register).fulfilled.match(resultAction)) {
+        const { token, user } = resultAction.payload!;
+        await saveToken(token);
+        await saveUserData(user);
+      } else {
+        Alert.alert("Ошибка", resultAction.payload || "Неизвестная ошибка");
+      }
+    } catch (e) {
+      Alert.alert("Ошибка", "Произошла непредвиденная ошибка");
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 16 }}>Вы не авторизованы</Text>
-      <Text style={{ fontSize: 16, marginTop: 10 }}>Введите имяпользователя</Text>
-      <TextInput style={styles.input} placeholder="Введите имя" value={input} onChangeText={setInput}></TextInput>
-      <Pressable onPress={pressableHandler} style={styles.button}>
-        <Text style={styles.buttonText}>Войти</Text>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <Text style={styles.title}>{isLogin ? "Вход в систему" : "Регистрация"}</Text>
+
+      {!isLogin && <TextInput style={styles.input} placeholder="Ваше имя" value={name} onChangeText={setName} autoCapitalize="words" />}
+
+      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+
+      <TextInput style={styles.input} placeholder="Пароль (мин. 6 символов)" value={password} onChangeText={setPassword} secureTextEntry />
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
+
+      <Pressable style={styles.button} onPress={handleSubmit} disabled={loading}>
+        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>{isLogin ? "Войти" : "Зарегистрироваться"}</Text>}
       </Pressable>
-    </View>
+
+      <Pressable
+        onPress={() => {
+          setIsLogin(!isLogin);
+          setName("");
+          setEmail("");
+          setPassword("");
+        }}
+        style={styles.switchButton}
+      >
+        <Text style={styles.switchText}>{isLogin ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти"}</Text>
+      </Pressable>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  input: {
-    height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    fontSize: 16,
-    width: 300,
-    marginTop: 20,
-  },
-  button: {
-    marginTop: 20,
-    paddingHorizontal: 130,
-    paddingVertical: 15,
-    backgroundColor: "#c00",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-  },
+  container: { flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#f5f5f5" },
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 30, color: "#333", textAlign: "center" },
+  input: { width: "100%", height: 50, backgroundColor: "#fff", borderWidth: 1, borderColor: "#ddd", borderRadius: 8, paddingHorizontal: 15, fontSize: 16, marginBottom: 15 },
+  button: { width: "100%", paddingVertical: 15, backgroundColor: "#007AFF", borderRadius: 8, alignItems: "center", marginTop: 10 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  switchButton: { marginTop: 20, alignItems: "center" },
+  switchText: { color: "#007AFF", fontSize: 14 },
+  errorText: { color: "red", textAlign: "center", marginBottom: 10 },
 });
 
 export default LoginScreen;
