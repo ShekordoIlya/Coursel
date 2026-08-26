@@ -1,27 +1,41 @@
+import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { ICourses } from "../api/coursesSlice";
-import { RootStackParamList } from "../types/rootStackTypes";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ICourses } from "../api/coursesSlice";
+import { RootStackParamList } from "../types/rootStackTypes";
 
-type CourseCardNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+type NavigationProp = StackNavigationProp<RootStackParamList, "Home">;
 
-const CourseCard = ({ course }: { course: ICourses }) => {
-  const { title, id, userId, body } = course;
-  const navigation = useNavigation<CourseCardNavigationProp>();
+interface CourseCardProps {
+  course: ICourses;
+}
+
+const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
+  const navigation = useNavigation<NavigationProp>();
+  const { title, id, description } = course;
+
+  const handlePress = () => {
+    navigation.navigate("CourseDetails", {
+      courseId: id.toString(),
+      courseName: title,
+      courseDescription: description || "Описание отсутствует",
+    });
+  };
 
   return (
-    <Pressable
-      onPress={() => {
-        navigation.navigate("CourseDetails", { courseId: id.toString(), courseName: title, courseDescription: body });
-      }}
-    >
-      <View style={styles.container}>
-        <View style={styles.wrapperContainer}>
-          <AntDesign name="laptop" size={24} color="black" />
-          <Text style={{ flex: 1, fontSize: 16 }}>Курс по {title}</Text>
-        </View>
+    <Pressable onPress={handlePress} style={({ pressed }) => [styles.container, { transform: [{ scale: pressed ? 0.97 : 1 }] }]}>
+      <View style={styles.iconContainer}>
+        <AntDesign name="laptop" size={24} color="#007AFF" />
+      </View>
+
+      <View style={styles.textContainer}>
+        <Text style={styles.title} numberOfLines={1}>
+          {title}
+        </Text>
+        <Text style={styles.description} numberOfLines={2}>
+          {description || "Нажмите, чтобы узнать подробнее о курсе..."}
+        </Text>
       </View>
     </Pressable>
   );
@@ -29,27 +43,40 @@ const CourseCard = ({ course }: { course: ICourses }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flexDirection: "row",
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 16,
+    marginVertical: 8,
     marginHorizontal: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: "#E3F2FD",
     justifyContent: "center",
     alignItems: "center",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "black",
-    borderRadius: 10,
-    backgroundColor: "white",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    marginRight: 15,
   },
-  wrapperContainer: {
+  textContainer: {
     flex: 1,
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 13,
+    color: "#888",
   },
 });
 

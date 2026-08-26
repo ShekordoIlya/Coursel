@@ -19,6 +19,27 @@ export const getCourses = createAsyncThunk<ICourses[], void, { rejectValue: stri
   }
 });
 
+export const createCourse = createAsyncThunk<ICourses, { title: string; description: string }, { rejectValue: string }>("courses/createCourse", async (courseData, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`${apiUrl}/api/courses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(courseData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Ошибка при создании курса");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    return rejectWithValue((error as Error).message);
+  }
+});
+
 interface IInitialState {
   data: ICourses[] | null;
   loading: boolean;
@@ -29,7 +50,7 @@ export interface ICourses {
   id: number;
   userId: number;
   title: string;
-  body: string;
+  description: string;
 }
 
 const initialState: IInitialState = {
@@ -56,6 +77,12 @@ const courseApiSlice = createSlice({
       .addCase(getCourses.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(createCourse.fulfilled, (state, action) => {
+        state.data = [action.payload, ...(state.data || [])];
+      })
+      .addCase(createCourse.rejected, (state, action) => {
+        state.error = action.payload || "Не удалось создать курс";
       });
   },
 });

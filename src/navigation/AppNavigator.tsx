@@ -5,6 +5,7 @@ import CourseDetailScreen from "../screens/CourseDetailScreen";
 import LoginScreen from "../screens/LoginScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { useAppSelector } from "../store/hooks";
+import AddCourseScreen from "../screens/AddCourseScreen";
 
 const AuthStack = createNativeStackNavigator({
   initialRouteName: "Home",
@@ -24,6 +25,10 @@ const AuthStack = createNativeStackNavigator({
     Profile: {
       screen: ProfileScreen,
       options: { title: "Профиль пользователя" },
+    },
+    AddCourse: {
+      screen: AddCourseScreen,
+      options: { title: "Добавить курс" },
     },
   },
 });

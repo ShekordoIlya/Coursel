@@ -3,9 +3,14 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 export type RootStackParamList = {
   Home: undefined;
-  CourseDetails: ICourseDetails;
+  CourseDetails: {
+    courseId: string;
+    courseName: string;
+    courseDescription: string;
+  };
   Login: undefined;
   Profile: undefined;
+  AddCourse: undefined;
 };
 
 export interface ICourseDetails {
