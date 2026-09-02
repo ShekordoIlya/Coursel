@@ -60,18 +60,7 @@ const CourseDetailScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>О курсе</Text>
         <Text style={styles.description}>{courseDescription}</Text>
 
-        <Pressable
-          style={({ pressed }) => [
-            styles.enrollButton,
-            // Меняем цвет, если уже записан
-            isAlreadyEnrolled && styles.enrolledButton,
-            // Меняем цвет при загрузке
-            loading && styles.loadingButton,
-            { opacity: pressed && !isButtonDisabled ? 0.8 : 1 },
-          ]}
-          onPress={handleEnroll}
-          disabled={isButtonDisabled}
-        >
+        <Pressable style={({ pressed }) => [styles.enrollButton, isAlreadyEnrolled && styles.enrolledButton, loading && styles.loadingButton, { opacity: pressed && !isButtonDisabled ? 0.8 : 1 }]} onPress={handleEnroll} disabled={isButtonDisabled}>
           {loading ? <ActivityIndicator color="#fff" /> : isAlreadyEnrolled ? <Text style={styles.enrollButtonText}>✓ Вы записаны на курс</Text> : <Text style={styles.enrollButtonText}>Записаться на курс</Text>}
         </Pressable>
       </View>
